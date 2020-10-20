@@ -17,7 +17,7 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.Use(commonMiddleware)
 	myRouter.HandleFunc("/pokemons", getAllPokemons).Methods("GET")
-	log.Fatal(http.ListenAndServe(":80", myRouter))
+	log.Fatal(http.ListenAndServe(":443", myRouter))
 }
 
 func commonMiddleware(next http.Handler) http.Handler {
