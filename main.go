@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,21 @@ import (
 )
 
 func getAllPokemons(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(database.PokemonDb)
+	json.NewEncoder(w).Encode(database.PokemonDbAsValueArray())
+}
+
+func addPokemon(w http.ResponseWriter, r *http.Request) {
+	var newPokemon database.Pokemon
+
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	json.Unmarshal(reqBody, &newPokemon)
+
+	if _, ok := database.PokemonDb[newPokemon.ID]; ok {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+	database.PokemonDb[newPokemon.ID] = newPokemon
+	w.WriteHeader(http.StatusOK)
 }
 
 func handleRequests() {
@@ -22,6 +37,7 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.Use(commonMiddleware)
 	myRouter.HandleFunc("/pokemons", getAllPokemons).Methods("GET")
+	myRouter.HandleFunc("/pokemons", addPokemon).Methods("POST")
 	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 }
 
