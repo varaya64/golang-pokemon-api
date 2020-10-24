@@ -1,7 +1,7 @@
 # How to build
 Navigate to the directory where you cloned and then run the following command in the terminal:
 
-`go build`
+`go buildx`
 
 # How to run
 Once that the build process has completed, execute the program by running the command:
